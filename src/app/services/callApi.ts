@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, EMPTY } from 'rxjs';
 
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable()
 export class CallApi {
-   serverAddress: String = 'https://solar-back.kaminski.lu/api';
+   serverAddress = 'https://solar-back.kaminski.lu/api';
   constructor(private newHttp: HttpClient) {
   }
 

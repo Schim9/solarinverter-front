@@ -12,7 +12,16 @@
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && echo \"convert-to-standalone\" | npx ng generate @angular/core:standalone 2>&1)",
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && echo \"prune-ng-modules\" | npx ng generate @angular/core:standalone 2>&1)",
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && echo \"standalone-bootstrap\" | npx ng generate @angular/core:standalone 2>&1)",
-      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng build 2>&1)"
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng build 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular/core:control-flow 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng add @angular-eslint/schematics --skip-confirmation 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:convert-tslint-to-eslint --remove-tslint-if-no-more-tslint-targets --ignore-existing-tslint-config 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:convert-tslint-to-eslint 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:add-config-to-project solarInverter 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:add-config-to-project 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:add-eslint-to-project solarInverter 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && rm tslint.json && npx ng lint 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng lint 2>&1)"
     ]
   }
 }
