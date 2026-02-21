@@ -10,12 +10,18 @@
 
 # IDEs and editors
 /.idea
+*.iml
+*.ipr
+*.iws
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
+
+# Claude Code
+.claude/
 
 # IDE - VSCode
 .vscode/*
