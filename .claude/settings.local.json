@@ -4,7 +4,8 @@
       "Bash(node:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng update @angular/core@14 @angular/cli@14 @angular/material@14 --allow-dirty --force 2>&1)"
     ]
   }
 }
