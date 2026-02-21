@@ -1,27 +1,50 @@
-# SolarInverter
+# SolarInverter — Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.6.
+Interface web de visualisation des statistiques de production d'un onduleur solaire.
+Consomme une API REST backend exposée sur `https://solar-back.kaminski.lu/api`.
 
-## Development server
+## Stack
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- **Angular 19** — Standalone Components, nouveau control-flow (`@if` / `@for`)
+- **Angular Material 19** — composants MDC (datepicker, boutons, icônes)
+- **RxJS 7** — gestion des flux HTTP et événements inter-composants
+- **TypeScript 5.8**
+- Graphique en barres : **SVG natif** (zéro dépendance externe de rendu)
+- Formatage de dates : **API native** `Intl` / `toLocaleDateString`
 
-## Code scaffolding
+## Commandes
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```bash
+npm start        # Serveur de développement → http://localhost:4200
+npm run build    # Build de production → dist/solarInverter/
+npm test         # Tests unitaires (Karma / Jasmine)
+npm run lint     # ESLint
+```
 
-## Build
+## Architecture
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Application single-page sans routeur. Les deux composants sont rendus directement dans `AppComponent`.
 
-## Running unit tests
+```
+AppComponent
+├── LiveStatComponent   → GET /livedata
+│     Cartes de stats : production du jour, 7j, 30j, année, facturable
+│     Spinner inline pendant le chargement ; icône ✕ si valeur nulle
+│
+└── BarChartComponent   → GET /daily-prod?start=&end=
+      Graphique SVG responsive (ResizeObserver)
+      Sélecteurs de période, boutons Actualiser / Exporter
+      Tooltip au survol (desktop) ou au tap (mobile, auto-dismiss 3s)
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+**Flux de données :**
+1. `LiveStatComponent` interroge `/livedata` à l'init et sur chaque rafraîchissement
+2. La valeur `dayProd` est émise via `ToolsBoxService`
+3. `BarChartComponent` la reçoit et ne rappelle `/daily-prod` que si elle a changé
 
-## Running end-to-end tests
+## Points notables
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+- `ToolsBoxService` sert de bus d'événements entre les deux composants via des `EventEmitter` Angular
+- Le backend base URL est codé en dur dans `src/app/services/callApi.ts`
+- Locale Material : `fr` (format de date français)
+- Build de production : ~550 kB JS / ~123 kB gzippé
