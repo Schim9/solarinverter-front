@@ -6,7 +6,9 @@
       "Bash(tail:*)",
       "Bash(cd:*)",
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng update @angular/core@14 @angular/cli@14 @angular/material@14 --allow-dirty --force 2>&1)",
-      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng update @angular/core@15 @angular/cli@15 @angular/material@15 --allow-dirty --force 2>&1)"
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng update @angular/core@15 @angular/cli@15 @angular/material@15 --allow-dirty --force 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng update @angular/core@16 @angular/cli@16 @angular/material@16 --allow-dirty --force 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng update rxjs@7 --allow-dirty 2>&1)"
     ]
   }
 }
