@@ -4,8 +4,16 @@
     <mat-icon>wb_sunny</mat-icon>
     <div class="stat-card__body">
       <span class="stat-card__label">Aujourd'hui</span>
-      <span class="stat-card__date">{{ currentDate }}</span>
-      <span class="stat-card__value">{{ runtimeProd }}</span>
+      @if (!isLoading && currentDate) {
+        <span class="stat-card__date">{{ currentDate }}</span>
+      }
+      @if (isLoading) {
+        <span class="value-loader"></span>
+      } @else if (runtimeProd == null) {
+        <mat-icon class="value-na">close</mat-icon>
+      } @else {
+        <span class="stat-card__value">{{ runtimeProd }}</span>
+      }
     </div>
   </div>
 
@@ -13,7 +21,13 @@
     <mat-icon>view_week</mat-icon>
     <div class="stat-card__body">
       <span class="stat-card__label">7 jours</span>
-      <span class="stat-card__value">{{ weekProd }}</span>
+      @if (isLoading) {
+        <span class="value-loader"></span>
+      } @else if (weekProd == null) {
+        <mat-icon class="value-na">close</mat-icon>
+      } @else {
+        <span class="stat-card__value">{{ weekProd }}</span>
+      }
     </div>
   </div>
 
@@ -21,7 +35,13 @@
     <mat-icon>calendar_month</mat-icon>
     <div class="stat-card__body">
       <span class="stat-card__label">30 jours</span>
-      <span class="stat-card__value">{{ monthProd }}</span>
+      @if (isLoading) {
+        <span class="value-loader"></span>
+      } @else if (monthProd == null) {
+        <mat-icon class="value-na">close</mat-icon>
+      } @else {
+        <span class="stat-card__value">{{ monthProd }}</span>
+      }
     </div>
   </div>
 
@@ -29,7 +49,13 @@
     <mat-icon>event_note</mat-icon>
     <div class="stat-card__body">
       <span class="stat-card__label">Année</span>
-      <span class="stat-card__value">{{ yearProd }}</span>
+      @if (isLoading) {
+        <span class="value-loader"></span>
+      } @else if (yearProd == null) {
+        <mat-icon class="value-na">close</mat-icon>
+      } @else {
+        <span class="stat-card__value">{{ yearProd }}</span>
+      }
     </div>
   </div>
 
@@ -37,8 +63,16 @@
     <mat-icon>receipt_long</mat-icon>
     <div class="stat-card__body">
       <span class="stat-card__label">Facturable</span>
-      <span class="stat-card__date">depuis le {{ contractStartDate }}</span>
-      <span class="stat-card__value">{{ contractProd }}</span>
+      @if (!isLoading && contractStartDate) {
+        <span class="stat-card__date">depuis le {{ contractStartDate }}</span>
+      }
+      @if (isLoading) {
+        <span class="value-loader"></span>
+      } @else if (contractProd == null) {
+        <mat-icon class="value-na">close</mat-icon>
+      } @else {
+        <span class="stat-card__value">{{ contractProd }}</span>
+      }
     </div>
   </div>
 

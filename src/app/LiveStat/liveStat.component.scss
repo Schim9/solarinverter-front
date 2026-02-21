@@ -3,6 +3,33 @@
   margin-bottom: 16px;
 }
 
+// ── Spinner loader ────────────────────────────────────────────────────────────
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.value-loader {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d4ece8;
+  border-top-color: #3cba9f;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin-top: 4px;
+}
+
+.value-na {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #ddd;
+  margin-top: 4px;
+}
+
+// ── Grid & cards ──────────────────────────────────────────────────────────────
+
 .stat-grid {
   display: flex;
   gap: 10px;
@@ -80,6 +107,13 @@
     .stat-card__label   { color: rgba(255, 255, 255, .75); }
     .stat-card__date    { color: rgba(255, 255, 255, .65); }
     .stat-card__value   { color: white; }
+
+    .value-loader {
+      border-color: rgba(255, 255, 255, .3);
+      border-top-color: white;
+    }
+
+    .value-na { color: rgba(255, 255, 255, .5); }
 
     &:hover {
       box-shadow: 0 6px 20px rgba(60, 186, 159, .45);

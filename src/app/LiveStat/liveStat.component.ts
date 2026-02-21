@@ -13,13 +13,15 @@ import {MatIcon} from '@angular/material/icon';
 })
 export class LiveStatComponent implements OnInit {
 
-  currentDate: string;
-  runtimeProd: number;
-  contractProd: number;
-  contractStartDate: string;
-  weekProd: number;
-  monthProd: number;
-  yearProd: number;
+  isLoading = true;
+
+  currentDate:      string | null = null;
+  runtimeProd:      number | null = null;
+  contractProd:     number | null = null;
+  contractStartDate: string | null = null;
+  weekProd:         number | null = null;
+  monthProd:        number | null = null;
+  yearProd:         number | null = null;
 
   constructor(private callAPI: CallApi, private toolsBox: ToolsBoxService) {}
 
@@ -29,22 +31,32 @@ export class LiveStatComponent implements OnInit {
   }
 
   getInverterStat = () => {
-    return this.callAPI.call(HTTP_COMMAND.GET, '/livedata/').pipe(
+    this.isLoading = true;
+    return this.callAPI.call(HTTP_COMMAND.GET, '/livedata').pipe(
       map((element: any) => {
-        this.currentDate   = element.date;
-        this.runtimeProd   = element.dayProd;
-        this.contractProd      = element.contractProd;
-        const [y, m, d]        = (element.contractStartDate as string).split('-').map(Number);
-        this.contractStartDate = new Date(y, m - 1, d)
-          .toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'});
-        this.weekProd      = element.weekProd;
-        this.monthProd     = element.monthProd;
-        this.yearProd      = element.yearProd;
-        return element.dayProd;
+        this.currentDate  = element.date        ?? null;
+        this.runtimeProd  = element.dayProd     ?? null;
+        this.contractProd = element.contractProd ?? null;
+        this.weekProd     = element.weekProd     ?? null;
+        this.monthProd    = element.monthProd    ?? null;
+        this.yearProd     = element.yearProd     ?? null;
+
+        const rawDate = element.contractStartDate as string | null | undefined;
+        if (rawDate) {
+          const [y, m, d]    = rawDate.split('-').map(Number);
+          this.contractStartDate = new Date(y, m - 1, d)
+            .toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'});
+        } else {
+          this.contractStartDate = null;
+        }
+
+        this.isLoading = false;
+        return this.runtimeProd;
       }),
       map(dayprod => this.toolsBox.getReceiveUpdateTrigger().emit(dayprod)),
       catchError(err => {
         console.log('Error during getting live data', err);
+        this.isLoading = false;
         return of(null);
       })
     );
