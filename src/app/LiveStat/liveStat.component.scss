@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.stat-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 130px;
+  background: white;
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+  border-top: 3px solid #e8f7f4;
+  transition: box-shadow .2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(60, 186, 159, .15);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #aaccc8;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: #9ebab6;
+    font-weight: 500;
+  }
+
+  &__date {
+    font-size: 11px;
+    color: #bbb;
+  }
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2a2a2a;
+    line-height: 1.1;
+    letter-spacing: -.5px;
+  }
+
+  // Today card — teal accent
+  &--today {
+    border-top-color: #3cba9f;
+
+    mat-icon { color: #3cba9f; }
+    .stat-card__value { color: #3cba9f; }
+  }
+
+  // Billable card — filled teal, stands out as the key business metric
+  &--contract {
+    background: linear-gradient(135deg, #3cba9f 0%, #2da58b 100%);
+    border-top-color: transparent;
+    box-shadow: 0 4px 14px rgba(60, 186, 159, .35);
+
+    mat-icon            { color: rgba(255, 255, 255, .75); }
+    .stat-card__label   { color: rgba(255, 255, 255, .75); }
+    .stat-card__value   { color: white; }
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(60, 186, 159, .45);
+    }
+  }
+}

@@ -1,18 +1,46 @@
-<table class="table">
-  <thead>
-  <tr>
-    <th scope="row">{{currentDate}}</th>
-    <th scope="row">7D</th>
-    <th scope="row">30D</th>
-    <th scope="row">1Y</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>{{runtimeProd}}</td>
-    <td>{{weekProd}}</td>
-    <td>{{monthProd}}</td>
-    <td>{{yearProd}}</td>
-  </tr>
-  </tbody>
-</table>
+<div class="stat-grid">
+
+  <div class="stat-card stat-card--today">
+    <mat-icon>wb_sunny</mat-icon>
+    <div class="stat-card__body">
+      <span class="stat-card__label">Aujourd'hui</span>
+      <span class="stat-card__date">{{ currentDate }}</span>
+      <span class="stat-card__value">{{ runtimeProd }}</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <mat-icon>view_week</mat-icon>
+    <div class="stat-card__body">
+      <span class="stat-card__label">7 jours</span>
+      <span class="stat-card__value">{{ weekProd }}</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <mat-icon>calendar_month</mat-icon>
+    <div class="stat-card__body">
+      <span class="stat-card__label">30 jours</span>
+      <span class="stat-card__value">{{ monthProd }}</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <mat-icon>event_note</mat-icon>
+    <div class="stat-card__body">
+      <span class="stat-card__label">Année</span>
+      <span class="stat-card__value">{{ yearProd }}</span>
+    </div>
+  </div>
+
+  @if (contractProd != null) {
+    <div class="stat-card stat-card--contract">
+      <mat-icon>receipt_long</mat-icon>
+      <div class="stat-card__body">
+        <span class="stat-card__label">Facturable</span>
+        <span class="stat-card__value">{{ contractProd }}</span>
+      </div>
+    </div>
+  }
+
+</div>
