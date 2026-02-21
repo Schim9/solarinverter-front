@@ -21,7 +21,8 @@
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:add-config-to-project 2>&1)",
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng generate @angular-eslint/schematics:add-eslint-to-project solarInverter 2>&1)",
       "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && rm tslint.json && npx ng lint 2>&1)",
-      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng lint 2>&1)"
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng lint 2>&1)",
+      "Bash(cd D:/dev/workspaces/SolarInverter/solarInverter-front && npx ng test --watch=false --browsers=ChromeHeadless 2>&1)"
     ]
   }
 }
