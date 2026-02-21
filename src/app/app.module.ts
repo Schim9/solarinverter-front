@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {CallApi} from './services/callApi';
-import {HttpClientModule} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {BarChartComponent} from './barChart/barChart.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
@@ -16,27 +16,20 @@ import {MatInputModule} from '@angular/material/input';
 
 
 
-@NgModule({
-  declarations: [
-    AppComponent, BarChartComponent, LiveStatComponent
-  ],
-  imports: [
-    HttpClientModule,
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-    MatSlideToggleModule,
-    MatInputModule
-  ],
-  exports: [
-  ],
-  providers: [
-    CallApi,
-    ToolsBoxService,
-    {provide: MAT_DATE_LOCALE, useValue: 'fr'},
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent, BarChartComponent, LiveStatComponent
+    ],
+    exports: [],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatNativeDateModule,
+        MatDatepickerModule,
+        MatSlideToggleModule,
+        MatInputModule], providers: [
+        CallApi,
+        ToolsBoxService,
+        { provide: MAT_DATE_LOCALE, useValue: 'fr' },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule { }
