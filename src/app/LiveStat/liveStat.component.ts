@@ -16,6 +16,7 @@ export class LiveStatComponent implements OnInit {
   currentDate: string;
   runtimeProd: number;
   contractProd: number;
+  contractStartDate: string;
   weekProd: number;
   monthProd: number;
   yearProd: number;
@@ -32,7 +33,10 @@ export class LiveStatComponent implements OnInit {
       map((element: any) => {
         this.currentDate   = element.date;
         this.runtimeProd   = element.dayProd;
-        this.contractProd  = element.contractProd;
+        this.contractProd      = element.contractProd;
+        const [y, m, d]        = (element.contractStartDate as string).split('-').map(Number);
+        this.contractStartDate = new Date(y, m - 1, d)
+          .toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'});
         this.weekProd      = element.weekProd;
         this.monthProd     = element.monthProd;
         this.yearProd      = element.yearProd;
