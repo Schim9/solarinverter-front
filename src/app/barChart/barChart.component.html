@@ -53,12 +53,24 @@
     @for (bar of bars; track bar.label) {
       <rect [attr.x]="bar.x" [attr.y]="bar.y"
             [attr.width]="bar.w" [attr.height]="bar.h"
-            fill="#3cba9f"/>
+            fill="#3cba9f" style="cursor: pointer"
+            (mouseenter)="onBarMouseEnter(bar)"
+            (mouseleave)="onBarMouseLeave()"
+            (touchstart)="onBarTouchStart(bar)"/>
       @if (bar.showLabel) {
         <text [attr.x]="bar.lx" [attr.y]="bar.ly"
               [attr.transform]="bar.lt"
               text-anchor="end" font-size="10" fill="#666">{{ bar.label }}</text>
       }
+    }
+
+    @if (activeBar) {
+      <rect [attr.x]="tooltipCx - 38" [attr.y]="tooltipTy"
+            width="76" height="28" rx="14"
+            fill="#1a1a1a"/>
+      <polygon [attr.points]="tooltipArrow" fill="#1a1a1a"/>
+      <text [attr.x]="tooltipCx" [attr.y]="tooltipTy + 18"
+            text-anchor="middle" font-size="12" fill="white">{{ activeBar.tooltip }}</text>
     }
 
     <line [attr.x1]="axis.yX"  [attr.y1]="axis.yY1"

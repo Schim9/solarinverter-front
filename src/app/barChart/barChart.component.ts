@@ -17,6 +17,7 @@ function formatDate(date: Date): string {
 
 interface BarItem {
   x: number; y: number; w: number; h: number;
+  value: number; tooltip: string;
   label: string; showLabel: boolean;
   lx: number; ly: number; lt: string;
 }
@@ -43,6 +44,11 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
   bars: BarItem[] = [];
   yTicks: YTick[] = [];
   axis = { yX: 0, yY1: 0, yY2: 0, xY: 0, xX2: 0 };
+
+  // Tooltip state
+  activeBar: BarItem | null = null;
+  private hideTimer: ReturnType<typeof setTimeout> | null = null;
+  private isTouchActive = false;
 
   private resizeObserver!: ResizeObserver;
 
@@ -80,7 +86,58 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.resizeObserver?.disconnect();
+    if (this.hideTimer) clearTimeout(this.hideTimer);
   }
+
+  // ── Tooltip interactions ────────────────────────────────────────────────────
+
+  onBarMouseEnter(bar: BarItem) {
+    if (this.isTouchActive) return; // ignore simulated mouse events after touch
+    this.activeBar = bar;
+  }
+
+  onBarMouseLeave() {
+    if (this.isTouchActive) return;
+    this.activeBar = null;
+  }
+
+  onBarTouchStart(bar: BarItem) {
+    // Block simulated mouseenter/click that fires ~300ms after touchstart
+    this.isTouchActive = true;
+    setTimeout(() => { this.isTouchActive = false; }, 500);
+
+    if (this.activeBar === bar) {
+      this.activeBar = null;
+      if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
+    } else {
+      if (this.hideTimer) clearTimeout(this.hideTimer);
+      this.activeBar = bar;
+      // Auto-dismiss after 3s on mobile (no mouseleave on touch)
+      this.hideTimer = setTimeout(() => {
+        this.ngZone.run(() => { this.activeBar = null; });
+      }, 3000);
+    }
+  }
+
+  // Tooltip position getters
+  get tooltipCx(): number {
+    if (!this.activeBar) return 0;
+    const cx = this.activeBar.x + this.activeBar.w / 2;
+    return Math.max(this.axis.yX + 40, Math.min(cx, this.axis.xX2 - 40));
+  }
+
+  get tooltipTy(): number {
+    if (!this.activeBar) return 0;
+    return Math.max(this.activeBar.y - 38, this.axis.yY1 + 4);
+  }
+
+  get tooltipArrow(): string {
+    const cx = this.tooltipCx;
+    const base = this.tooltipTy + 28;
+    return `${cx - 5},${base} ${cx + 5},${base} ${cx},${base + 6}`;
+  }
+
+  // ── Data ────────────────────────────────────────────────────────────────────
 
   refreshStat = () => {
     this.getInverterStat().subscribe(
@@ -120,13 +177,14 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
     window.open('data:text/json,' + encodeURIComponent(JSON.stringify(this.data)), '_blank')!.focus();
   }
 
+  // ── Chart rendering ─────────────────────────────────────────────────────────
+
   private buildChart() {
     if (!this.chartContainer) return;
 
     const { width, height } = this.chartContainer.nativeElement.getBoundingClientRect();
     if (width === 0 || height === 0) return;
 
-    // Adaptive margins based on available width
     const ML = width < 400 ? 38 : 52;
     const MR = 12;
     const MT = 12;
@@ -135,6 +193,7 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
     const CH = height - MT - MB;
 
     this.axis = { yX: ML, yY1: MT, yY2: MT + CH, xY: MT + CH, xX2: ML + CW };
+    this.activeBar = null;
 
     const n = this.values.length;
     if (n === 0) { this.bars = []; this.yTicks = []; return; }
@@ -143,8 +202,6 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
     const slot   = CW / n;
     const barW   = Math.max(1, slot * 0.7);
     const gap    = (slot - barW) / 2;
-
-    // Show 1 label every N bars to avoid overlap (target ~50px per label)
     const labelInterval = Math.max(1, Math.ceil(50 / slot));
 
     this.bars = this.values.map((v, i) => {
@@ -155,6 +212,8 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
       const ly   = MT + CH + 5;
       return {
         x, y, w: barW, h: barH,
+        value: v,
+        tooltip: Number.isInteger(v) ? String(v) : v.toFixed(1),
         label: this.timestamps[i],
         showLabel: i % labelInterval === 0,
         lx, ly, lt: `rotate(-45,${lx},${ly})`
