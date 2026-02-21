@@ -9,10 +9,10 @@ import {BarChartComponent} from './barChart/barChart.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatLegacySlideToggleModule as MatSlideToggleModule} from '@angular/material/legacy-slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {LiveStatComponent} from './LiveStat/liveStat.component';
 import {ToolsBoxService} from './services/toolbox';
-import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
+import {MatInputModule} from '@angular/material/input';
 
 
 
