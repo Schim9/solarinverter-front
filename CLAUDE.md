@@ -18,7 +18,7 @@ ng build --prod    # Production build (uses environment.prod.ts)
 Single-page Angular 13 app that displays solar inverter production statistics. No routing is used — both components render directly in `AppComponent`.
 
 **Data flow:**
-1. `LiveStatComponent` polls `/livedata/` on init and on refresh events → emits `dayProd` via `ToolsBoxService.fireReceiveUpdatedValue`
+1. `LiveStatComponent` polls `/livedata` on init and on refresh events → emits `dayProd` via `ToolsBoxService.fireReceiveUpdatedValue`
 2. `BarChartComponent` subscribes to that emitter and conditionally re-fetches `/daily-prod?start=&end=` if the day's production value has changed
 3. `ToolsBoxService` acts as an event bus between the two components using Angular `EventEmitter`s (not a subject/store)
 
