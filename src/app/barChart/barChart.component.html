@@ -20,8 +20,8 @@
 <button (click)="refreshStat()">Refresh</button>
 <button (click)="exportStat()">Export</button>
 
-<div class="chart-container" style="position: relative; height:40vh; width:70vw">
-  <svg [attr.viewBox]="viewBox" width="100%" height="100%">
+<div #chartContainer class="chart-container">
+  <svg width="100%" height="100%">
 
     <!-- Gridlines + Y axis labels -->
     @for (tick of yTicks; track $index) {
@@ -29,7 +29,7 @@
             [attr.x2]="axis.xX2" [attr.y2]="tick.y"
             stroke="#e0e0e0" stroke-width="1"/>
       <text [attr.x]="axis.yX - 5" [attr.y]="tick.y + 4"
-            text-anchor="end" font-size="12" fill="#666">{{ tick.label }}</text>
+            text-anchor="end" font-size="11" fill="#666">{{ tick.label }}</text>
     }
 
     <!-- Bars + X axis labels -->
@@ -37,9 +37,11 @@
       <rect [attr.x]="bar.x" [attr.y]="bar.y"
             [attr.width]="bar.w" [attr.height]="bar.h"
             fill="#3cba9f"/>
-      <text [attr.x]="bar.lx" [attr.y]="bar.ly"
-            [attr.transform]="bar.lt"
-            text-anchor="end" font-size="10" fill="#666">{{ bar.label }}</text>
+      @if (bar.showLabel) {
+        <text [attr.x]="bar.lx" [attr.y]="bar.ly"
+              [attr.transform]="bar.lt"
+              text-anchor="end" font-size="10" fill="#666">{{ bar.label }}</text>
+      }
     }
 
     <!-- Axes -->

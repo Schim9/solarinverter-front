@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {CallApi, HTTP_COMMAND} from '../services/callApi';
 import {MatDatepickerInputEvent, MatDatepickerInput, MatDatepickerToggle, MatDatepicker} from '@angular/material/datepicker';
@@ -12,15 +12,10 @@ function formatDate(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-// SVG layout constants
-const W = 1000, H = 400;
-const ML = 60, MR = 20, MT = 20, MB = 60;
-const CW = W - ML - MR;  // chart width  = 920
-const CH = H - MT - MB;  // chart height = 320
-
 interface BarItem {
   x: number; y: number; w: number; h: number;
-  label: string; lx: number; ly: number; lt: string;
+  label: string; showLabel: boolean;
+  lx: number; ly: number; lt: string;
 }
 interface YTick { y: number; label: string; }
 
@@ -30,7 +25,9 @@ interface YTick { y: number; label: string; }
   styleUrls: ['./barChart.component.scss'],
   imports: [MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
 })
-export class BarChartComponent implements OnInit {
+export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('chartContainer') chartContainer!: ElementRef<HTMLElement>;
+
   data: {date: string, prod: number}[] = [];
   timestamps: string[] = [];
   values: number[] = [];
@@ -39,18 +36,17 @@ export class BarChartComponent implements OnInit {
   startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   endDate   = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
-  // SVG chart data
-  readonly viewBox = `0 0 ${W} ${H}`;
   bars: BarItem[] = [];
   yTicks: YTick[] = [];
+  axis = { yX: 0, yY1: 0, yY2: 0, xY: 0, xX2: 0 };
 
-  // Axis line endpoints (constants exposed to template)
-  readonly axis = {
-    yX: ML, yY1: MT, yY2: MT + CH,
-    xY: MT + CH, xX2: ML + CW
-  };
+  private resizeObserver!: ResizeObserver;
 
-  constructor(private callAPI: CallApi, private toolsBox: ToolsBoxService) {}
+  constructor(
+    private callAPI: CallApi,
+    private toolsBox: ToolsBoxService,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit() {
     this.refreshStat();
@@ -69,6 +65,17 @@ export class BarChartComponent implements OnInit {
       }
       return of(null);
     });
+  }
+
+  ngAfterViewInit() {
+    this.resizeObserver = new ResizeObserver(() => {
+      this.ngZone.run(() => this.buildChart());
+    });
+    this.resizeObserver.observe(this.chartContainer.nativeElement);
+  }
+
+  ngOnDestroy() {
+    this.resizeObserver?.disconnect();
   }
 
   refreshStat = () => {
@@ -110,21 +117,44 @@ export class BarChartComponent implements OnInit {
   }
 
   private buildChart() {
+    if (!this.chartContainer) return;
+
+    const { width, height } = this.chartContainer.nativeElement.getBoundingClientRect();
+    if (width === 0 || height === 0) return;
+
+    // Adaptive margins based on available width
+    const ML = width < 400 ? 38 : 52;
+    const MR = 12;
+    const MT = 12;
+    const MB = width < 400 ? 42 : 55;
+    const CW = width  - ML - MR;
+    const CH = height - MT - MB;
+
+    this.axis = { yX: ML, yY1: MT, yY2: MT + CH, xY: MT + CH, xX2: ML + CW };
+
     const n = this.values.length;
     if (n === 0) { this.bars = []; this.yTicks = []; return; }
 
-    const maxVal  = Math.max(...this.values);
-    const slot    = CW / n;
-    const barW    = slot * 0.7;
-    const gap     = (slot - barW) / 2;
+    const maxVal = Math.max(...this.values);
+    const slot   = CW / n;
+    const barW   = Math.max(1, slot * 0.7);
+    const gap    = (slot - barW) / 2;
+
+    // Show 1 label every N bars to avoid overlap (target ~50px per label)
+    const labelInterval = Math.max(1, Math.ceil(50 / slot));
 
     this.bars = this.values.map((v, i) => {
       const barH = maxVal > 0 ? (v / maxVal) * CH : 0;
       const x    = ML + i * slot + gap;
       const y    = MT + CH - barH;
       const lx   = ML + i * slot + slot / 2;
-      const ly   = MT + CH + 8;
-      return { x, y, w: barW, h: barH, label: this.timestamps[i], lx, ly, lt: `rotate(-45,${lx},${ly})` };
+      const ly   = MT + CH + 5;
+      return {
+        x, y, w: barW, h: barH,
+        label: this.timestamps[i],
+        showLabel: i % labelInterval === 0,
+        lx, ly, lt: `rotate(-45,${lx},${ly})`
+      };
     });
 
     const TICKS = 5;
