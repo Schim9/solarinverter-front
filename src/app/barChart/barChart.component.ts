@@ -4,6 +4,9 @@ import {CallApi, HTTP_COMMAND} from '../services/callApi';
 import {MatDatepickerInputEvent, MatDatepickerInput, MatDatepickerToggle, MatDatepicker} from '@angular/material/datepicker';
 import {ToolsBoxService} from '../services/toolbox';
 import {MatInput, MatSuffix} from '@angular/material/input';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 function formatDate(date: Date): string {
   const y = date.getFullYear();
@@ -23,7 +26,8 @@ interface YTick { y: number; label: string; }
   selector: 'app-bar-chart',
   templateUrl: './barChart.component.html',
   styleUrls: ['./barChart.component.scss'],
-  imports: [MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
+  imports: [MatInput, MatSuffix, MatDatepickerInput, MatDatepickerToggle, MatDatepicker,
+            MatFormField, MatLabel, MatButton, MatIcon]
 })
 export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartContainer') chartContainer!: ElementRef<HTMLElement>;
