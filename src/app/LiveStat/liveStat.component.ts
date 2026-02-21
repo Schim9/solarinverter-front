@@ -7,8 +7,7 @@ import {of} from 'rxjs';
 @Component({
     selector: 'app-live-stat',
     templateUrl: './liveStat.component.html',
-    styleUrls: ['./liveStat.component.scss'],
-    standalone: false
+    styleUrls: ['./liveStat.component.scss']
 })
 export class LiveStatComponent implements OnInit {
 

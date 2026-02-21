@@ -3,14 +3,15 @@ import {Observable, of} from 'rxjs';
 import { Chart } from 'chart.js';
 import {CallApi, HTTP_COMMAND} from '../services/callApi';
 import * as moment from 'moment';
-import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 import {ToolsBoxService} from '../services/toolbox';
+import { MatInput, MatSuffix } from '@angular/material/input';
 
 @Component({
     selector: 'app-bar-chart',
     templateUrl: './barChart.component.html',
     styleUrls: ['./barChart.component.scss'],
-    standalone: false
+    imports: [MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
 })
 export class BarChartComponent implements OnInit  {
   data: {date: string, prod: number}[] = [];
