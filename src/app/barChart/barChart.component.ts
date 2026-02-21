@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import { Chart } from 'chart.js';
 import {CallApi, HTTP_COMMAND} from '../services/callApi';
-import { MatDatepickerInputEvent, MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import {MatDatepickerInputEvent, MatDatepickerInput, MatDatepickerToggle, MatDatepicker} from '@angular/material/datepicker';
 import {ToolsBoxService} from '../services/toolbox';
-import { MatInput, MatSuffix } from '@angular/material/input';
+import {MatInput, MatSuffix} from '@angular/material/input';
 
 function formatDate(date: Date): string {
   const y = date.getFullYear();
@@ -13,67 +12,78 @@ function formatDate(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
+// SVG layout constants
+const W = 1000, H = 400;
+const ML = 60, MR = 20, MT = 20, MB = 60;
+const CW = W - ML - MR;  // chart width  = 920
+const CH = H - MT - MB;  // chart height = 320
+
+interface BarItem {
+  x: number; y: number; w: number; h: number;
+  label: string; lx: number; ly: number; lt: string;
+}
+interface YTick { y: number; label: string; }
+
 @Component({
-    selector: 'app-bar-chart',
-    templateUrl: './barChart.component.html',
-    styleUrls: ['./barChart.component.scss'],
-    imports: [MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
+  selector: 'app-bar-chart',
+  templateUrl: './barChart.component.html',
+  styleUrls: ['./barChart.component.scss'],
+  imports: [MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
 })
-export class BarChartComponent implements OnInit  {
+export class BarChartComponent implements OnInit {
   data: {date: string, prod: number}[] = [];
   timestamps: string[] = [];
   values: number[] = [];
-  barchart: Chart;
 
   currentDate = formatDate(new Date());
   startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+  endDate   = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
+  // SVG chart data
+  readonly viewBox = `0 0 ${W} ${H}`;
+  bars: BarItem[] = [];
+  yTicks: YTick[] = [];
 
-  constructor(private callAPI: CallApi, private toolsBox: ToolsBoxService) {
-  }
+  // Axis line endpoints (constants exposed to template)
+  readonly axis = {
+    yX: ML, yY1: MT, yY2: MT + CH,
+    xY: MT + CH, xX2: ML + CW
+  };
+
+  constructor(private callAPI: CallApi, private toolsBox: ToolsBoxService) {}
 
   ngOnInit() {
     this.refreshStat();
-    // In case live data is updated, we may need to refresh the graph
-    this.toolsBox.getReceiveUpdateTrigger().subscribe(
-      dayProd => {
-        console.log('New value received from live-data endpoint:', dayProd);
-        if (dayProd == null || dayProd === 0) {
-          console.log('no data received, no need to update');
+    this.toolsBox.getReceiveUpdateTrigger().subscribe(dayProd => {
+      console.log('New value received from live-data endpoint:', dayProd);
+      if (dayProd == null || dayProd === 0) {
+        console.log('no data received, no need to update');
+      } else {
+        const currentDateProd = this.data.find(element => element.date === this.currentDate);
+        console.log('currentDateProd is ', currentDateProd);
+        if (!currentDateProd || dayProd !== Number(currentDateProd.prod)) {
+          this.refreshStat();
         } else {
-          // Check the stored current date production
-          const currentDateProd = this.data.find(element => element.date === this.currentDate);
-          console.log('currentDateProd is ', currentDateProd);
-          if (!currentDateProd || dayProd !== Number(currentDateProd.prod)) {
-            // Data has changed
-            this.refreshStat();
-          } else {
-            console.log('No need to call the api');
-          }
+          console.log('No need to call the api');
         }
-        return of(null);
       }
-    );
+      return of(null);
+    });
   }
 
   refreshStat = () => {
-    // this.toolsBox.refreshValues();
     this.getInverterStat().subscribe(
       (res: any) => {
         this.clearData();
         const receivedData: [any] = res;
         receivedData.map(element => {
-          // Format data
           const date = element.date;
           const value = element.value;
-          // Store data for export
           this.data.unshift({date: date, prod: value});
-          // Store data for display
           this.timestamps.unshift(date);
           this.values.unshift(value);
         });
-        this.displayChart();
+        this.buildChart();
       },
       (err) => {
         console.log('Error while getting inverter stats', err);
@@ -90,52 +100,42 @@ export class BarChartComponent implements OnInit  {
   changeDate(type: string, event: MatDatepickerInputEvent<Date>) {
     const newDate = new Date(event.value!);
     switch (type) {
-      case 'start':
-        this.startDate = newDate;
-        break;
-      case 'end':
-        this.endDate = newDate;
-        break;
-      default:
-        break;
+      case 'start': this.startDate = newDate; break;
+      case 'end':   this.endDate   = newDate; break;
     }
   }
 
   exportStat = () => {
-    window.open('data:text/json,' + encodeURIComponent(JSON.stringify(this.data)),
-      '_blank').focus();
+    window.open('data:text/json,' + encodeURIComponent(JSON.stringify(this.data)), '_blank')!.focus();
   }
 
-  private displayChart = () => {
+  private buildChart() {
+    const n = this.values.length;
+    if (n === 0) { this.bars = []; this.yTicks = []; return; }
 
-      this.barchart = new Chart('canvas', {
-        type: 'bar',
-        data: {
-          labels: this.timestamps,
-          datasets: [
-            {
-              data: this.values,
-              borderColor: '#3cba9f',
-              backgroundColor: '#3cba9f',
-              fill: true
-            }
-          ]
-        },
-        options: {
-          legend: {
-            display: false
-          },
-          scales: {
-            xAxes: [{
-              display: true
-            }],
-            yAxes: [{
-              display: true
-            }],
-          }
-        }
-      });
+    const maxVal  = Math.max(...this.values);
+    const slot    = CW / n;
+    const barW    = slot * 0.7;
+    const gap     = (slot - barW) / 2;
+
+    this.bars = this.values.map((v, i) => {
+      const barH = maxVal > 0 ? (v / maxVal) * CH : 0;
+      const x    = ML + i * slot + gap;
+      const y    = MT + CH - barH;
+      const lx   = ML + i * slot + slot / 2;
+      const ly   = MT + CH + 8;
+      return { x, y, w: barW, h: barH, label: this.timestamps[i], lx, ly, lt: `rotate(-45,${lx},${ly})` };
+    });
+
+    const TICKS = 5;
+    this.yTicks = maxVal > 0
+      ? Array.from({length: TICKS + 1}, (_, i) => {
+          const v = (maxVal * i) / TICKS;
+          return { y: MT + CH - (v / maxVal) * CH, label: Number.isInteger(v) ? String(v) : v.toFixed(1) };
+        })
+      : [];
   }
+
   private clearData = () => {
     this.data = [];
     this.timestamps = [];

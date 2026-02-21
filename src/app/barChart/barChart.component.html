@@ -1,5 +1,4 @@
 
-
 <input matInput
    [value]="startDate"
    [matDatepicker]="pickerStart"
@@ -18,11 +17,38 @@
 <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
 <mat-datepicker #pickerEnd [startAt]="endDate"></mat-datepicker>
 
-
-
 <button (click)="refreshStat()">Refresh</button>
 <button (click)="exportStat()">Export</button>
 
 <div class="chart-container" style="position: relative; height:40vh; width:70vw">
-  <canvas id="canvas"></canvas>
+  <svg [attr.viewBox]="viewBox" width="100%" height="100%">
+
+    <!-- Gridlines + Y axis labels -->
+    @for (tick of yTicks; track $index) {
+      <line [attr.x1]="axis.yX" [attr.y1]="tick.y"
+            [attr.x2]="axis.xX2" [attr.y2]="tick.y"
+            stroke="#e0e0e0" stroke-width="1"/>
+      <text [attr.x]="axis.yX - 5" [attr.y]="tick.y + 4"
+            text-anchor="end" font-size="12" fill="#666">{{ tick.label }}</text>
+    }
+
+    <!-- Bars + X axis labels -->
+    @for (bar of bars; track bar.label) {
+      <rect [attr.x]="bar.x" [attr.y]="bar.y"
+            [attr.width]="bar.w" [attr.height]="bar.h"
+            fill="#3cba9f"/>
+      <text [attr.x]="bar.lx" [attr.y]="bar.ly"
+            [attr.transform]="bar.lt"
+            text-anchor="end" font-size="10" fill="#666">{{ bar.label }}</text>
+    }
+
+    <!-- Axes -->
+    <line [attr.x1]="axis.yX"  [attr.y1]="axis.yY1"
+          [attr.x2]="axis.yX"  [attr.y2]="axis.yY2"
+          stroke="#999" stroke-width="1"/>
+    <line [attr.x1]="axis.yX"  [attr.y1]="axis.xY"
+          [attr.x2]="axis.xX2" [attr.y2]="axis.xY"
+          stroke="#999" stroke-width="1"/>
+
+  </svg>
 </div>
