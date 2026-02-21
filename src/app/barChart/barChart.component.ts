@@ -7,9 +7,10 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 import {ToolsBoxService} from '../services/toolbox';
 
 @Component({
-  selector: 'app-bar-chart',
-  templateUrl: './barChart.component.html',
-  styleUrls: ['./barChart.component.scss']
+    selector: 'app-bar-chart',
+    templateUrl: './barChart.component.html',
+    styleUrls: ['./barChart.component.scss'],
+    standalone: false
 })
 export class BarChartComponent implements OnInit  {
   data: {date: string, prod: number}[] = [];

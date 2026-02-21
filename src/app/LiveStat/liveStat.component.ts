@@ -5,9 +5,10 @@ import {catchError, map} from 'rxjs/operators';
 import {of} from 'rxjs';
 
 @Component({
-  selector: 'app-live-stat',
-  templateUrl: './liveStat.component.html',
-  styleUrls: ['./liveStat.component.scss']
+    selector: 'app-live-stat',
+    templateUrl: './liveStat.component.html',
+    styleUrls: ['./liveStat.component.scss'],
+    standalone: false
 })
 export class LiveStatComponent implements OnInit {
 
