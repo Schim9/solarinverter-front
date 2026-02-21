@@ -174,7 +174,13 @@ export class BarChartComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   exportStat = () => {
-    window.open('data:text/json,' + encodeURIComponent(JSON.stringify(this.data)), '_blank')!.focus();
+    const blob = new Blob([JSON.stringify(this.data, null, 2)], {type: 'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `production_${formatDate(this.startDate)}_${formatDate(this.endDate)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   // ── Chart rendering ─────────────────────────────────────────────────────────
