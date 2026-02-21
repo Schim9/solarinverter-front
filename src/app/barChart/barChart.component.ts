@@ -2,10 +2,16 @@ import {Component, OnInit} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import { Chart } from 'chart.js';
 import {CallApi, HTTP_COMMAND} from '../services/callApi';
-import * as moment from 'moment';
 import { MatDatepickerInputEvent, MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 import {ToolsBoxService} from '../services/toolbox';
 import { MatInput, MatSuffix } from '@angular/material/input';
+
+function formatDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 @Component({
     selector: 'app-bar-chart',
@@ -19,9 +25,9 @@ export class BarChartComponent implements OnInit  {
   values: number[] = [];
   barchart: Chart;
 
-  currentDate = moment().startOf('day').format('YYYY-MM-DD');
-  startDate = new Date(moment().startOf('month').format('YYYY-MM-DD hh:mm'));
-  endDate = new Date(moment().endOf('month').format('YYYY-MM-DD hh:mm'));
+  currentDate = formatDate(new Date());
+  startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
 
   constructor(private callAPI: CallApi, private toolsBox: ToolsBoxService) {
@@ -75,16 +81,14 @@ export class BarChartComponent implements OnInit  {
   }
 
   getInverterStat = (): Observable<any> => {
-    const startDate: string = moment(this.startDate, moment.defaultFormat).format('YYYY-MM-DD');
-    const endDate: string = moment(this.endDate, moment.defaultFormat).format('YYYY-MM-DD');
     const serviceURi = '/daily-prod' +
-      '?start=' + startDate +
-      '&end=' + endDate;
+      '?start=' + formatDate(this.startDate) +
+      '&end=' + formatDate(this.endDate);
     return this.callAPI.call(HTTP_COMMAND.GET, serviceURi);
   }
 
   changeDate(type: string, event: MatDatepickerInputEvent<Date>) {
-    const newDate = new Date(moment(event.value, moment.defaultFormat).format('YYYY-MM-DD hh:mm'));
+    const newDate = new Date(event.value!);
     switch (type) {
       case 'start':
         this.startDate = newDate;

@@ -104,24 +104,8 @@
         }
       }
     },
-    "solarInverter-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "prefix": "",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "solarInverter:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "solarInverter:serve:production"
-            }
-          }
-        }
-      }
-    }
+  },
+  "cli": {
+    "analytics": false
   }
 }
