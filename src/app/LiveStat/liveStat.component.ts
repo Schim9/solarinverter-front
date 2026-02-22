@@ -15,7 +15,6 @@ export class LiveStatComponent implements OnInit {
 
   isLoading = true;
 
-  currentDate:      string | null = null;
   runtimeProd:      number | null = null;
   contractProd:     number | null = null;
   contractStartDate: string | null = null;
@@ -34,7 +33,6 @@ export class LiveStatComponent implements OnInit {
     this.isLoading = true;
     return this.callAPI.call(HTTP_COMMAND.GET, '/livedata').pipe(
       map((element: any) => {
-        this.currentDate  = element.date        ?? null;
         this.runtimeProd  = element.dayProd     ?? null;
         this.contractProd = element.contractProd ?? null;
         this.weekProd     = element.weekProd     ?? null;

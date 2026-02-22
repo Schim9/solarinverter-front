@@ -4,9 +4,6 @@
     <mat-icon>wb_sunny</mat-icon>
     <div class="stat-card__body">
       <span class="stat-card__label">Aujourd'hui</span>
-      @if (!isLoading && currentDate) {
-        <span class="stat-card__date">{{ currentDate }}</span>
-      }
       @if (isLoading) {
         <span class="value-loader"></span>
       } @else if (runtimeProd == null) {
